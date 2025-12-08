@@ -198,6 +198,8 @@ Create 4 subnets in total (2 public, 2 private):
    - AZs: Select 2 availability zones
    - Subnets: Select both **private subnets**
 4. Click **Create**
+   
+<img width="1102" height="425" alt="image" src="https://github.com/user-attachments/assets/70f2e550-b15a-451b-84fb-dda2e9c52778" />
 
 #### 2.2 Create Security Group
 
@@ -211,6 +213,9 @@ Create 4 subnets in total (2 public, 2 private):
    - Type: `PostgreSQL` (5432) OR `MySQL/Aurora` (3306)
    - Source: Custom → `10.0.0.0/16`
 5. Click **Create**
+
+<img width="1298" height="567" alt="image" src="https://github.com/user-attachments/assets/87a16474-229f-4e5f-9905-e8a4aafbfe95" />
+
 
 #### 2.3 Create Cluster Parameter Group
 
@@ -243,6 +248,9 @@ Create 4 subnets in total (2 public, 2 private):
    - Find: `binlog_row_metadata` → Set to: `FULL`
 
 6. Click **Save changes**
+
+<img width="1300" height="379" alt="image" src="https://github.com/user-attachments/assets/e2cc2c60-942e-43d1-a838-afc8ea15761a" />
+
 
 #### 2.4 Create Aurora Cluster
 
@@ -277,6 +285,9 @@ Create 4 subnets in total (2 public, 2 private):
 
 ⏳ **Wait 10-15 minutes** for Aurora to become available
 
+<img width="1300" height="297" alt="image" src="https://github.com/user-attachments/assets/e3145e2a-4755-4016-8f88-2e065839ebb4" />
+
+
 ### Phase 3: Redshift Setup (10 minutes)
 
 #### 3.1 Create Redshift Security Group
@@ -291,6 +302,9 @@ Create 4 subnets in total (2 public, 2 private):
    - Source: Custom → `10.0.0.0/16`
 5. Click **Create**
 
+<img width="1074" height="312" alt="image" src="https://github.com/user-attachments/assets/3ec41174-2e2b-4826-95d5-eda17453c1c4" />
+
+
 #### 3.2 Create IAM Role for Redshift
 
 1. Go to **IAM → Roles**
@@ -300,6 +314,9 @@ Create 4 subnets in total (2 public, 2 private):
 5. Permissions: Skip (use defaults)
 6. Role name: `zero-etl-redshift-role`
 7. Click **Create role**
+
+<img width="1299" height="547" alt="image" src="https://github.com/user-attachments/assets/349e8360-0a96-4a97-bfbb-1bf0d66c79f7" />
+
 
 #### 3.3 Create Redshift Serverless
 
@@ -323,6 +340,8 @@ Create 4 subnets in total (2 public, 2 private):
 
 ⏳ **Wait 5-10 minutes** for Redshift to become available
 
+<img width="1295" height="629" alt="image" src="https://github.com/user-attachments/assets/cc565e19-274e-4246-a068-e1e05dc8a9fa" />
+
 ### Phase 4: Zero-ETL Integration (5 minutes)
 
 #### 4.1 Create Integration
@@ -338,6 +357,9 @@ Create 4 subnets in total (2 public, 2 private):
 ⏳ **Wait 10-15 minutes** for status to change to **"Active"**
 
 You can monitor progress in the Zero-ETL integrations page. The status will progress: Creating → Syncing → Active
+
+
+
 
 ### Phase 5: Database Access Setup (10 minutes)
 
@@ -359,10 +381,15 @@ Since databases are in private subnets, you need access. Choose one option:
      - Allow SSH (22) from your IP
 3. Launch instance
 
+<img width="1309" height="197" alt="image" src="https://github.com/user-attachments/assets/f9f05d55-ad05-4753-b9c8-6980ce060299" />
+
+
 **Connect to bastion:**
 ```bash
 ssh -i your-key.pem ec2-user@
 ```
+<img width="645" height="395" alt="image" src="https://github.com/user-attachments/assets/6ef5b27f-2014-4f64-baa8-e806e92ef1d0" />
+
 
 **Install database clients:**
 ```bash
@@ -372,6 +399,9 @@ sudo yum install postgresql15 -y
 # MySQL client
 sudo yum install mariadb105 -y
 ```
+
+<img width="652" height="496" alt="image" src="https://github.com/user-attachments/assets/cc6bfc91-f90f-4545-ba37-86a198123d9e" />
+
 
 #### Option B: AWS Systems Manager Session Manager (No SSH keys)
 
@@ -391,12 +421,12 @@ sudo yum install mariadb105 -y
 
 **For PostgreSQL:**
 ```bash
-psql -h  -U dbadmin -d sampledb
+psql -h <your-aurora-writer-endpoint> -U dbadmin -d sampledb
 ```
 
 **For MySQL:**
 ```bash
-mysql -h  -u dbadmin -p sampledb
+mysql -h <your-aurora-writer-endpoint> -u dbadmin -p sampledb
 ```
 
 #### 6.3 Create Schema and Load Data
@@ -486,6 +516,8 @@ CREATE TABLE customers (
 -- Rest similar to PostgreSQL...
 ```
 
+<img width="707" height="275" alt="image" src="https://github.com/user-attachments/assets/b7976dce-d038-47cc-a117-f1fd5308f5b4" />
+
 ### Phase 7: Verify Replication in Redshift (5 minutes)
 
 ⏳ **Wait 2-5 minutes** after loading data in Aurora
@@ -494,8 +526,11 @@ CREATE TABLE customers (
 
 Get endpoint from **Redshift Console → Serverless → Workgroups → Your workgroup**
 ```bash
-psql -h  -p 5439 -U dbadmin -d sampledb
+psql -h <your-redshift-endpoint> -p 5439 -U dbadmin -d sampledb
 ```
+
+<img width="1021" height="988" alt="image" src="https://github.com/user-attachments/assets/ef9c2111-eab3-4b20-b090-750d26def4d5" />
+
 
 #### 7.2 Verify Tables
 ```sql
