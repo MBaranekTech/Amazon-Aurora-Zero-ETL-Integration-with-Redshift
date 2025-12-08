@@ -358,7 +358,7 @@ Create 4 subnets in total (2 public, 2 private):
 
 You can monitor progress in the Zero-ETL integrations page. The status will progress: Creating → Syncing → Active
 
-
+<img width="1021" height="988" alt="image" src="https://github.com/user-attachments/assets/ef9c2111-eab3-4b20-b090-750d26def4d5" />
 
 
 ### Phase 5: Database Access Setup (10 minutes)
@@ -528,8 +528,6 @@ Get endpoint from **Redshift Console → Serverless → Workgroups → Your work
 ```bash
 psql -h <your-redshift-endpoint> -p 5439 -U dbadmin -d sampledb
 ```
-
-<img width="1021" height="988" alt="image" src="https://github.com/user-attachments/assets/ef9c2111-eab3-4b20-b090-750d26def4d5" />
 
 
 #### 7.2 Verify Tables
