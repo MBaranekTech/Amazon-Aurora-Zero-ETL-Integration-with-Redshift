@@ -134,6 +134,9 @@ Create 4 subnets in total (2 public, 2 private):
 - AZ: `us-east-1b`
 - CIDR: `10.0.12.0/24`
 
+<img width="1305" height="285" alt="image" src="https://github.com/user-attachments/assets/9956492b-a701-49eb-b365-a43e7271a134" />
+
+
 #### 1.3 Create Internet Gateway
 
 1. Go to **VPC → Internet Gateways**
@@ -141,6 +144,9 @@ Create 4 subnets in total (2 public, 2 private):
 3. Name: `zero-etl-igw`
 4. After creation: **Actions → Attach to VPC**
 5. Select your VPC
+
+<img width="1308" height="207" alt="image" src="https://github.com/user-attachments/assets/4c300dac-02bf-4278-b966-c5bf53182ee5" />
+
 
 #### 1.4 Create NAT Gateway
 
@@ -152,6 +158,9 @@ Create 4 subnets in total (2 public, 2 private):
    - Click **Allocate Elastic IP**
 4. Click **Create NAT Gateway**
 
+<img width="1310" height="203" alt="image" src="https://github.com/user-attachments/assets/4c3883d9-e20d-4e5a-b5d9-c11364be2a94" />
+
+
 #### 1.5 Configure Route Tables
 
 **For Public Subnets:**
@@ -162,6 +171,9 @@ Create 4 subnets in total (2 public, 2 private):
    - Target: Internet Gateway
 4. **Subnet associations:** Add both public subnets
 
+<img width="1067" height="671" alt="image" src="https://github.com/user-attachments/assets/bd7c8474-138f-43be-a039-c7eff1906835" />
+
+
 **For Private Subnets:**
 1. **Create route table**
 2. Name: `zero-etl-private-rt`
@@ -169,6 +181,9 @@ Create 4 subnets in total (2 public, 2 private):
    - Destination: `0.0.0.0/0`
    - Target: NAT Gateway
 4. **Subnet associations:** Add both private subnets
+
+<img width="1057" height="644" alt="image" src="https://github.com/user-attachments/assets/283936aa-884e-4d67-a69d-dfba2df2bfb5" />
+
 
 ### Phase 2: Aurora Database Setup (15 minutes)
 
