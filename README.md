@@ -35,6 +35,9 @@ Zero-ETL integration automatically replicates data from Aurora to Redshift in ne
 - Handle schema changes manually
 - Worry about data consistency
 
+MySQL is case-insensitive by default <br>
+Redshift (PostgreSQL) is case-sensitive <br>
+
 ## 🏗️ Architecture
 ```
 ┌─────────────────────────┐
@@ -673,6 +676,7 @@ SELECT * FROM customers WHERE name = 'Test User';
 - Use Aurora MySQL 3.08.0 or newer
 - Check region availability of Zero-ETL feature
 
+
 ## 🧹 Cleanup
 
 **IMPORTANT:** Delete resources to avoid charges!
@@ -715,6 +719,8 @@ aws rds describe-db-clusters --region us-east-1
 aws redshift-serverless list-workgroups --region us-east-1
 aws ec2 describe-vpcs --region us-east-1
 ```
+
+
 
 ## 📚 What I Learned
 
