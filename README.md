@@ -654,6 +654,7 @@ SELECT * FROM customers WHERE name = 'Test User';
 - Check route tables are correct
 - Ensure NAT Gateway is attached
 - Verify you're using private endpoints
+- Verify VPC setting 
 
 ### Data Not Replicating
 
