@@ -314,9 +314,11 @@ Create 4 subnets in total (2 public, 2 private):
 2. Click **Create role**
 3. Trusted entity: **AWS service**
 4. Use case: **Redshift - Customizable**
-5. Permissions: Skip (use defaults)
+5. **Permissions: Attach `AmazonRedshiftAllCommandsFullAccess`**
 6. Role name: `zero-etl-redshift-role`
 7. Click **Create role**
+
+**Note:** This role allows Redshift to access Aurora data through Zero-ETL integration.
 
 <img width="1299" height="547" alt="image" src="https://github.com/user-attachments/assets/349e8360-0a96-4a97-bfbb-1bf0d66c79f7" />
 
@@ -525,6 +527,8 @@ CREATE TABLE customers (
 
 ⏳ **Wait 2-5 minutes** after loading data in Aurora
 
+<img width="599" height="433" alt="Snímek obrazovky 2025-12-10 144527" src="https://github.com/user-attachments/assets/a4190a30-617b-4c29-b9fa-59a9797e7e68" />
+
 #### 7.1 Connect to Redshift
 
 Get endpoint from **Redshift Console → Serverless → Workgroups → Your workgroup**
@@ -534,22 +538,18 @@ psql -h <your-redshift-endpoint> -p 5439 -U dbadmin -d sampledb
 
 
 #### 7.2 Verify Tables
-```sql
+```sql (POSTGRESQL)
 -- List all tables
-SELECT schemaname, tablename 
-FROM pg_tables 
-WHERE schemaname = 'public'
-ORDER BY tablename;
-
--- Check row counts
-SELECT 'customers' as table_name, COUNT(*) FROM customers
+SELECT 'customers' as table_name, COUNT(*) as row_count FROM sampledb.customers
 UNION ALL
-SELECT 'products', COUNT(*) FROM products
+SELECT 'products', COUNT(*) FROM sampledb.products
 UNION ALL
-SELECT 'orders', COUNT(*) FROM orders
+SELECT 'orders', COUNT(*) FROM sampledb.orders
 UNION ALL
-SELECT 'order_items', COUNT(*) FROM order_items;
+SELECT 'order_items', COUNT(*) FROM sampledb.order_items
+ORDER BY table_name;
 ```
+<img width="676" height="189" alt="Snímek obrazovky 2025-12-10 144724" src="https://github.com/user-attachments/assets/2e3165d7-4564-408b-9097-97809bd083b5" />
 
 ## 📊 Sample Data & Queries
 
@@ -561,12 +561,13 @@ SELECT
     p.product_name,
     SUM(oi.quantity) as units_sold,
     SUM(oi.quantity * oi.price) as total_revenue
-FROM products p
-JOIN order_items oi ON p.product_id = oi.product_id
+FROM sampledb.products p
+JOIN sampledb.order_items oi ON p.product_id = oi.product_id
 GROUP BY p.product_name
 ORDER BY total_revenue DESC
 LIMIT 10;
 ```
+<img width="434" height="194" alt="Snímek obrazovky 2025-12-10 150229" src="https://github.com/user-attachments/assets/110ff52c-4888-462e-a317-9813f44b4171" />
 
 **2. Customer Lifetime Value**
 ```sql
@@ -575,11 +576,12 @@ SELECT
     COUNT(DISTINCT o.order_id) as total_orders,
     SUM(o.total_amount) as lifetime_value,
     AVG(o.total_amount) as avg_order_value
-FROM customers c
-JOIN orders o ON c.customer_id = o.customer_id
+FROM sampledb.customers c
+JOIN sampledb.orders o ON c.customer_id = o.customer_id
 GROUP BY c.name
 ORDER BY lifetime_value DESC;
 ```
+<img width="485" height="197" alt="Snímek obrazovky 2025-12-10 150345" src="https://github.com/user-attachments/assets/b83daf6e-d233-4ba7-ba4e-a9e62a8e0594" />
 
 **3. Daily Sales Trend**
 ```sql
@@ -588,10 +590,11 @@ SELECT
     COUNT(*) as order_count,
     SUM(total_amount) as daily_revenue,
     AVG(total_amount) as avg_order_value
-FROM orders
+FROM sampledb.orders
 GROUP BY DATE(order_date)
 ORDER BY sale_date DESC;
 ```
+<img width="409" height="188" alt="Snímek obrazovky 2025-12-10 150414" src="https://github.com/user-attachments/assets/aaf07dc8-2c2f-431b-8e57-54b176db61c8" />
 
 **4. Category Performance**
 ```sql
@@ -600,11 +603,12 @@ SELECT
     COUNT(DISTINCT oi.order_id) as orders,
     SUM(oi.quantity) as units_sold,
     SUM(oi.quantity * oi.price) as revenue
-FROM products p
-JOIN order_items oi ON p.product_id = oi.product_id
+FROM sampledb.products p
+JOIN sampledb.order_items oi ON p.product_id = oi.product_id
 GROUP BY p.category
 ORDER BY revenue DESC;
 ```
+<img width="386" height="175" alt="Snímek obrazovky 2025-12-10 150543" src="https://github.com/user-attachments/assets/b022cf4e-ff10-436d-9165-e5d0d2c1d131" />
 
 **5. Real-time Replication Test**
 
@@ -612,11 +616,13 @@ In Aurora (source):
 ```sql
 INSERT INTO customers (name, email) VALUES ('Test User', 'test@example.com');
 ```
+<img width="956" height="430" alt="MYSQL" src="https://github.com/user-attachments/assets/2e1ffa51-d3c0-48b8-a248-b8eebc436982" />
 
 Wait 1-2 minutes, then in Redshift (target):
 ```sql
-SELECT * FROM customers WHERE name = 'Test User';
+SELECT * FROM sampledb.customers WHERE name = 'Test User';
 ```
+<img width="556" height="90" alt="POSTRESQL_REDSHIFT" src="https://github.com/user-attachments/assets/95e6301b-a07c-4627-aaba-e2ca61118220" />
 
 ## 💰 Cost Analysis
 
@@ -784,34 +790,22 @@ Found an issue or have a suggestion? Feel free to:
 ## 📝 License
 
 MIT License - Free to use for learning and portfolio projects
-<!--
+
 
 
 ## 👤 Author
 
-**[Your Name]**
-- 🌐 Portfolio: [yourwebsite.com](https://yourwebsite.com)
-- 💼 LinkedIn: [linkedin.com/in/yourprofile](https://linkedin.com/in/yourprofile)
-- 🐙 GitHub: [@yourusername](https://github.com/yourusername)
-- 📧 Email: your.email@example.com
--->
+**[Martin Baránek]**
+- 🌐 Portfolio: [baranekm.cz](https://baranekm.cz)
+- 💼 LinkedIn: [linkedin.com/in/baranekm](https://www.linkedin.com/in/baranekm-736a7532b/)
+- 🐙 GitHub: [@MBaranekTech](https://github.com/MBaranekTech)
+
 ## 🙏 Acknowledgments
 
 - AWS Documentation Team
 - AWS Data Engineering Community
 - Open Source Community
 
----
-<!--
-## 📸 Screenshots
-
-*Add your screenshots here:*
-- [ ] Architecture diagram
-- [ ] AWS Console showing Aurora cluster
-- [ ] Zero-ETL integration status "Active"
-- [ ] Redshift query editor with results
-- [ ] Sample analytics dashboard
--->
 ---
 
 **⭐ If this project helped you, please give it a star!**
